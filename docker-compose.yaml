@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: music_api
+    # The API container now exposes BOTH ports to your host machine
+    ports:
+      - "8000:8000"
+      - "8501:8501"
+    environment:
+      - PYTHONPATH=/app
+    volumes:
+      - ./artifacts:/app/artifacts
+      - ./config:/app/config
+    command: uvicorn app.api:app --host 0.0.0.0 --port 8000
+
+  dashboard:
+    build: .
+    container_name: music_dashboard
+    environment:
+      - PYTHONPATH=/app
+    # joins the 'api' network namespace
+    network_mode: "service:api"
+    depends_on:
+      - api
+    command: streamlit run dashboard/streamlit_app.py --server.port 8501 --server.address 0.0.0.0

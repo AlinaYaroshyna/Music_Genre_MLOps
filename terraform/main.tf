@@ -1,0 +1,97 @@
+resource "aws_ecr_repository" "app_repo" {
+  name         = var.project_name
+  force_delete = true
+}
+
+
+resource "aws_ecs_cluster" "main" {
+  name = "${var.project_name}-cluster"
+}
+
+
+resource "aws_iam_role" "ecs_exec_role" {
+  name = "${var.project_name}-exec-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = { Service = "ecs-tasks.amazonaws.com" }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_exec_policy" {
+  role       = aws_iam_role.ecs_exec_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+
+resource "aws_ecs_task_definition" "combined_task" {
+  family                   = "${var.project_name}-task"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "1024"
+  memory                   = "2048"
+  execution_role_arn       = aws_iam_role.ecs_exec_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name      = "api"
+      image     = "${aws_ecr_repository.app_repo.repository_url}:latest"
+      essential = true
+      command   = ["uvicorn", "app.api:app", "--host", "0.0.0.0", "--port", "8000"]
+      portMappings = [{ containerPort = 8000 }]
+    },
+    {
+      name      = "dashboard"
+      image     = "${aws_ecr_repository.app_repo.repository_url}:latest"
+      essential = true
+      command   = ["streamlit", "run", "dashboard/streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+      portMappings = [{ containerPort = 8501 }]
+    }
+  ])
+}
+
+
+data "aws_vpc" "default" { default = true }
+data "aws_subnets" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+}
+
+resource "aws_security_group" "ecs_sg" {
+  name   = "${var.project_name}-sg"
+  vpc_id = data.aws_vpc.default.id
+
+  ingress {
+    from_port   = 8501
+    to_port     = 8501
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+
+resource "aws_ecs_service" "app_service" {
+  name            = "${var.project_name}-service"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.combined_task.arn
+  launch_type     = "FARGATE"
+  desired_count   = 1
+
+  network_configuration {
+    subnets          = data.aws_subnets.default.ids
+    security_groups  = [aws_security_group.ecs_sg.id]
+    assign_public_ip = true
+  }
+}
