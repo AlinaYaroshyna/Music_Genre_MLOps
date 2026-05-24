@@ -49,23 +49,25 @@ Music_Genre_MLOps/
 
 ## 1. Clone the Repository
 
-git clone https://github.com/AlinaYaroshyna/Music_Genre_MLOps.git
+`git clone https://github.com/AlinaYaroshyna/Music_Genre_MLOps.git`
 
-cd Music_Genre_MLOps
+`cd Music_Genre_MLOps`
 
 ## 2. Create Virtual Environment
 
 ### Linux / macOS
 
+```
 python -m venv venv
 
 source venv/bin/activate
-
+```
 ### Windows
-
+```
 python -m venv venv
 
 venv\Scripts\activate
+```
 
 ## 3. Install Dependencies
 
@@ -77,13 +79,13 @@ pip install -r requirements.txt
 
 ## Train the Model
 
-python train.py
+`python train.py`
 
 Training metrics and hyperparameters are automatically logged to MLflow.
 
 ## Run Predictions
 
-python predict.py
+`python predict.py`
 
 ---
 
@@ -91,11 +93,11 @@ python predict.py
 
 ## Build Docker Image
 
-docker build -t music-genre-mlops .
+`docker build -t music-genre-mlops .`
 
 ## Run Container
 
-docker run -p 8000:8000 music-genre-mlops
+`docker run -p 8000:8000 music-genre-mlops`
 
 ---
 
@@ -104,18 +106,18 @@ docker run -p 8000:8000 music-genre-mlops
 Once the container is running, send a POST request to /predict.
 
 ## Request
-
+```
 {
   "audio_file": "path/to/song.wav"
 }
-
+```
 ## Response
-
+```
 {
   "predicted_genre": "Jazz",
   "confidence": 0.92
 }
-
+```
 ---
 
 # Portfolio Highlights
@@ -132,7 +134,6 @@ This project demonstrates a transition from Data Scientist to ML Engineer by foc
 # Author
 
 Alina Yaroshyna
-Machine Learning & MLOps Engineer
 
 GitHub: https://github.com/AlinaYaroshyna
 
