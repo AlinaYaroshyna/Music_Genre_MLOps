@@ -1,0 +1,16 @@
+audio:
+  sample_rate: 22050
+  duration: 30
+
+features:
+  n_mfcc: 13
+
+training:
+  n_splits: 5
+  n_repeats: 2
+  random_state: 42
+
+paths:
+  dataset: data/genres_original
+  models: artifacts/models
+  reports: artifacts/reports
