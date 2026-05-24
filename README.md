@@ -30,7 +30,7 @@ Manual genre tagging is slow and subjective. This system automates the process u
 # Project Structure
 
 Music_Genre_MLOps/
-
+```
 ├── src/
 │   ├── data_processing/      # Signal cleaning & normalization
 │   ├── training/             # Model training & hyperparameter tuning
@@ -42,7 +42,7 @@ Music_Genre_MLOps/
 ├── Dockerfile                # Containerization
 ├── requirements.txt          # Dependencies
 └── README.md
-
+```
 ---
 
 # Quick Start
