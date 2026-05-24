@@ -31,17 +31,35 @@ Manual genre tagging is slow and subjective. This system automates the process u
 
 Music_Genre_MLOps/
 ```
-├── src/
-│   ├── data_processing/      # Signal cleaning & normalization
-│   ├── training/             # Model training & hyperparameter tuning
-│   └── inference/            # API logic for real-time predictions
-│
-├── api/                      # FastAPI implementation
-├── notebooks/                # Research & EDA
-├── tests/                    # Pytest suite
-├── Dockerfile                # Containerization
-├── requirements.txt          # Dependencies
-└── README.md
+├── Dockerfile
+├── README.md
+├── app
+│   ├── api.py
+│   ├── feature_extractor.py
+│   └── predictor.py
+├── artifacts
+│   ├── confusion_matrices
+│   │   ├── centroid_knn.npy
+│   │   ...
+│   ├── metrics
+│   │   ├── centroid_knn.json
+│   │   ...
+│   ├── models
+│   │   ├── centroid_knn.pkl
+│   │   ...
+│   └── reports
+│       ├── centroid_knn.json
+│       ...
+├── config
+│   └── config.yaml
+├── dashboard
+│   └── streamlit_app.py
+├── docker-compose.yaml
+├── requirements.txt
+├── temp
+└── training
+    ├── save_results.py
+    └── train_models.py
 ```
 ---
 
